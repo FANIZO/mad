@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Break Me If You Can - Start</title>
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      text-align: center;
+      padding-top: 15%;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #111;
+      color: lime;
+      border: 1px solid lime;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    #error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>💥 Break Me If You Can 💥</h1>
+<p>Enter your hacker name to begin:</p>
+<input type="text" id="playerName" placeholder="Your Name">
+<br>
+<button onclick="startGame()">Start</button>
+<p id="error"></p>
+
+<script>
+  function startGame() {
+    const name = document.getElementById("playerName").value.trim();
+    const error = document.getElementById("error");
+
+    if (!name) {
+      error.textContent = "Please enter a name.";
+      return;
+    }
+
+    localStorage.setItem("hackerName", name);
+    localStorage.setItem("gameStart", Date.now());
+    window.location.href = "level1_phishing.html";
+  }
+</script>
+
+</body>
+</html>
