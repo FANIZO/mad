@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Break Me If You Can - Entry</title>
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      text-align: center;
+      padding-top: 15%;
+    }
+    h1 {
+      font-size: 3em;
+      animation: flicker 1.5s infinite alternate;
+    }
+    @keyframes flicker {
+      from { opacity: 0.6; }
+      to { opacity: 1; }
+    }
+    input, button {
+      padding: 10px;
+      font-size: 1em;
+      background-color: #111;
+      color: lime;
+      border: 1px solid lime;
+      margin-top: 20px;
+    }
+    #error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>💥 Break Me If You Can 💥</h1>
+<p>Enter your hacker name to start the challenge:</p>
+
+<input type="text" id="playerName" placeholder="Your Name">
+<br>
+<button onclick="startGame()">Start</button>
+
+<p id="error"></p>
+
+<script>
+function startGame() {
+  const name = document.getElementById("playerName").value.trim();
+  const error = document.getElementById("error");
+  if (!name) {
+    error.textContent = "Please enter your name.";
+    return;
+  }
+  localStorage.setItem("hackerName", name);
+  window.location.href = "level1_phishing.html";
+}
+
+<script>
+  const START_KEY = "gameStart";
+  const MAX_SECS = 60;
+  if (!localStorage.getItem(START_KEY)) {
+    localStorage.setItem(START_KEY, Date.now());
+  }
+  function checkClock() {
+    const elapsed =
+      (Date.now() - parseInt(localStorage.getItem(START_KEY), 10)) / 1000;
+    const left = Math.max(0, Math.ceil(MAX_SECS - elapsed));
+    if (left === 0) {
+      window.location.href = "time_up.html";
+    }
+    requestAnimationFrame(checkClock);
+  }
+  checkClock();
+</script>
+
+</script>
+
+</body>
+</html>

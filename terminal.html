@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Escape the Hacker - Level 3: Terminal</title>
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      padding: 20px;
+    }
+    #terminal {
+      background-color: #111;
+      border: 1px solid lime;
+      padding: 10px;
+      min-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    #input-container {
+      display: flex;
+    }
+    .prompt {
+      flex-shrink: 0;
+    }
+    #cmdInput {
+      background: transparent;
+      border: none;
+      color: lime;
+      font-family: monospace;
+      font-size: 1em;
+      outline: none;
+      flex-grow: 1;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
+<script>
+  const START_KEY = "gameStart";
+  const MAX_SECS = 60;
+  if (!localStorage.getItem(START_KEY)) {
+    localStorage.setItem(START_KEY, Date.now());
+  }
+  function checkClock() {
+    const elapsed =
+      (Date.now() - parseInt(localStorage.getItem(START_KEY), 10)) / 1000;
+    const left = Math.max(0, Math.ceil(MAX_SECS - elapsed));
+    if (left === 0) {
+      window.location.href = "time_up.html";
+    }
+    requestAnimationFrame(checkClock);
+  }
+  checkClock();
+</script>
+
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<h2>🖥 Escape the Hacker - Level 3: Terminal</h2>
+<p>Navigate the system and find the unlock code.</p>
+<div id="terminal"></div>
+<div id="input-container">
+  <span class="prompt" id="prompt">/home/user$&nbsp;</span>
+  <input type="text" id="cmdInput" autofocus autocomplete="off">
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2GuAPJXgBHlE-11JpheX-KbH3593UR8A",
+    authDomain: "break-me-if-you-can.firebaseapp.com",
+    databaseURL: "https://break-me-if-you-can-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "break-me-if-you-can",
+    storageBucket: "break-me-if-you-can.firebasestorage.app",
+    messagingSenderId: "801113986886",
+    appId: "1:801113986886:web:da0604ab81c15507d23747",
+    measurementId: "G-S10SSC53N0"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const name = localStorage.getItem("hackerName");
+
+  function updateProgress(level) {
+    if (name) db.ref("players/" + name).set({ level: level });
+  }
+
+  const fileSystem = {
+    "/home/user": ["documents", "key.txt", "secrets"],
+    "/home/user/documents": ["notes.doc"]
+  };
+  let currentPath = "/home/user";
+
+  const matchCommand = (cmd) => cmd.toLowerCase().replace("1", "l").trim();
+
+  function respondTo(command) {
+    switch (command) {
+      case "ls":
+        return fileSystem[currentPath]?.join(" ") || "No files here.";
+      case "cd documents":
+        currentPath = "/home/user/documents"; return "";
+      case "cd ..":
+        currentPath = "/home"; return "";
+      case "cat key.txt":
+        updateProgress(3);
+        setTimeout(() => {
+          terminal.innerHTML += "\n🔓 Code accepted. Escaping system...\n";
+          setTimeout(() => {
+            window.location.href = "reboot.html";
+          }, 3000);
+        }, 1000);
+        return "UNLOCK-CODE-0923";
+      case "help":
+        return "Available commands: ls, cd [dir], cat [file], clear, help";
+      case "clear":
+        terminal.innerHTML = ""; return "";
+      default:
+        return "Command not found. Type 'help' for available commands.";
+    }
+  }
+
+  const terminal = document.getElementById("terminal");
+  const cmdInput = document.getElementById("cmdInput");
+
+  cmdInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      const raw = cmdInput.value.trim();
+      const cmd = matchCommand(raw);
+      terminal.innerHTML += "\n" + currentPath + "$ " + raw;
+      const output = respondTo(cmd);
+      if (output) terminal.innerHTML += "\n" + output;
+      cmdInput.value = "";
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+  });
+</script>
+
+
+<style>
+#countdown {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  background: rgba(255, 0, 0, 0.85);
+  color: white;
+  padding: 8px 14px;
+  font-family: monospace;
+  font-size: 1.2em;
+  border-radius: 5px;
+  z-index: 9999;
+}
+</style>
+<div id="countdown">⏱ Time Left: <span id="timeLeft">60</span>s</div>
+<script>
+  const startTime = parseInt(localStorage.getItem("gameStart"), 10) || Date.now();
+  function updateTimer() {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const left = Math.max(0, Math.ceil(60 - elapsed));
+    const timeSpan = document.getElementById("timeLeft");
+    if (timeSpan) timeSpan.textContent = left;
+    if (left <= 0) {
+      window.location.href = "time_up.html";
+    } else {
+      requestAnimationFrame(updateTimer);
+    }
+  }
+  updateTimer();
+</script>
+
+</body>
+</html>

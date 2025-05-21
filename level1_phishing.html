@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Escape the Hacker - Level 1</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: white;
+      font-family: monospace;
+      padding: 40px;
+      text-align: center;
+    }
+    .email {
+      border: 1px solid gray;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      background-color: #1c1c1c;
+      cursor: pointer;
+    }
+    .email:hover {
+      background-color: #292929;
+    }
+    #message {
+      font-size: 1.2em;
+      color: lime;
+      margin-top: 30px;
+    }
+  </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
+<script>
+  const START_KEY = "gameStart";
+  const MAX_SECS = 60;
+  if (!localStorage.getItem(START_KEY)) {
+    localStorage.setItem(START_KEY, Date.now());
+  }
+  function checkClock() {
+    const elapsed =
+      (Date.now() - parseInt(localStorage.getItem(START_KEY), 10)) / 1000;
+    const left = Math.max(0, Math.ceil(MAX_SECS - elapsed));
+    if (left === 0) {
+      window.location.href = "time_up.html";
+    }
+    requestAnimationFrame(checkClock);
+  }
+  checkClock();
+</script>
+
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<h1>🛡 Escape the Hacker - Level 1</h1>
+<p>Two emails were sent to your inbox. One is a phishing attempt. Choose wisely.</p>
+
+<div class="email" onclick="failLevel()">
+  <strong>Subject:</strong> Urgent - Account Locked<br><br>
+  Your bank account has been locked. Click <a href='#'>here</a> to verify your identity.<br>
+  - Bank Security Team
+</div>
+
+<div class="email" onclick="passLevel()">
+  <strong>Subject:</strong> Reminder: Cybersecurity Training<br><br>
+  Hello team, just a reminder that your cybersecurity training is due Friday. No action is required for now.<br>
+  - HR Department
+</div>
+
+<div id="message"></div>
+
+<script>
+  // Replace with your Firebase config
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const name = localStorage.getItem("hackerName");
+
+  function updateProgress(level) {
+    if (name) {
+      db.ref("players/" + name).set({ level: level });
+    }
+  }
+
+  function failLevel() {
+    document.getElementById("message").style.color = "red";
+    document.getElementById("message").innerHTML = "❌ You clicked a phishing email! Ransomware activated...";
+    setTimeout(() => {
+      window.location.href = "ransom.html";
+    }, 3000);
+  }
+
+  function passLevel() {
+    document.getElementById("message").innerHTML = "✅ Well done! You identified the safe email. Moving to next level...";
+    updateProgress(1);
+    setTimeout(() => {
+      window.location.href = "password.html";
+    }, 3000);
+  }
+</script>
+
+
+<style>
+#countdown {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  background: rgba(255, 0, 0, 0.85);
+  color: white;
+  padding: 8px 14px;
+  font-family: monospace;
+  font-size: 1.2em;
+  border-radius: 5px;
+  z-index: 9999;
+}
+</style>
+<div id="countdown">⏱ Time Left: <span id="timeLeft">60</span>s</div>
+<script>
+  const startTime = parseInt(localStorage.getItem("gameStart"), 10) || Date.now();
+  function updateTimer() {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const left = Math.max(0, Math.ceil(60 - elapsed));
+    const timeSpan = document.getElementById("timeLeft");
+    if (timeSpan) timeSpan.textContent = left;
+    if (left <= 0) {
+      window.location.href = "time_up.html";
+    } else {
+      requestAnimationFrame(updateTimer);
+    }
+  }
+  updateTimer();
+</script>
+
+</body>
+</html>
